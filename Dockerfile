@@ -1,25 +1,33 @@
-# Stage de build de l'application Python
-FROM python:3.10-slim AS base
-# Adapter le chemin de travail au dossier hôte
+# Dockerfile
+
+# Utilise une image légère Python
+FROM python:3.10-slim
+
+# Installer netcat pour l’entrypoint
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends netcat-openbsd \
+ && rm -rf /var/lib/apt/lists/*
+
+# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier le code
-COPY requirements.txt .
-
-# Installer les dépendances\ nCOPY requirements.txt ./
+# Copier et installer les dépendances
+COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN apt update && apt install netcat-traditional -y
+# Copier l'application
+# - Le package Flask (dossier app/)
+# - Le script principal main.py
+# - Le script entrypoint.sh
+COPY app /app/app
+COPY app/main.py /app/main.py
+COPY entrypoint.sh /app/entrypoint.sh
 
-# Copier le code
-COPY app/ .
-COPY entrypoint.sh /app
-
-# Rendre le script d'entrée exécutable
+# Rendre entrypoint.sh exécutable
 RUN chmod +x /app/entrypoint.sh
 
-# Entrypoint pour attendre la DB
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Attendre que MySQL soit prêt, puis lancer l’app
+ENTRYPOINT ["./entrypoint.sh"]
 
-# Commande de démarrage par défaut
-CMD ["python","/app/main.py"]
+# Lancer l’application
+CMD ["python", "main.py"]
