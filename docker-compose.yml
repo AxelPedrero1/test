@@ -9,7 +9,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     volumes:
-      - db_data:/var/lib/mysql
+      - ./db_data:/var/lib/mysql
 
   message-service:
     build: .
@@ -21,5 +21,3 @@ services:
       - "5002:5002"
     restart: on-failure
 
-volumes:
-  db_data:
