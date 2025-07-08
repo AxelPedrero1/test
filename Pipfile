@@ -8,6 +8,7 @@ flask = "*"
 pyjwt = "*"
 sqlalchemy = "*"
 flask_sqlalchemy = "*"
+pymysql = "*"
 
 [dev-packages]
 
